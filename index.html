@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Comentarios</title>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    img.logo {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #005DAA;
+      margin-bottom: 30px;
+    }
+
+    .comment-box {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-left: 5px solid #005DAA;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 600px;
+      text-align: left;
+    }
+
+    .date {
+      color: #888;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+
+  <img class="logo" src="https://www.janem.mx/wp-content/uploads/2024/06/LogoJANEM.png" alt="Logo">
+  <h1>Comentarios de los Usuarios</h1>
+
+  <div id="comments"></div>
+
+  <script type="module">
+    // ✅ Replace with your Firebase config
+    const firebaseConfig = {
+  apiKey: "AIzaSyCzl_qx3W9mhQQtbp-keXhHrWrUY3ifdoU",
+  authDomain: "janem-cc479.firebaseapp.com",
+  projectId: "janem-cc479",
+  storageBucket: "janem-cc479.firebasestorage.app",
+  messagingSenderId: "55527076854",
+  appId: "1:55527076854:web:6cf93a85d7bf3404d38dd7",
+  measurementId: "G-YGF3B57319"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const commentsDiv = document.getElementById("comments");
+
+    // 🔄 Load comments
+    db.collection("comments")
+      .orderBy("date", "desc")
+      .get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          commentsDiv.innerHTML = "<p>No hay comentarios aún.</p>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const comment = data.comment;
+          const date = data.date.toDate().toLocaleString();
+
+          const div = document.createElement("div");
+          div.className = "comment-box";
+          div.innerHTML = `
+            <p>${comment}</p>
+            <div class="date">${date}</div>
+          `;
+          commentsDiv.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching comments:", error);
+        commentsDiv.innerHTML = "<p>Error al cargar los comentarios.</p>";
+      });
+  </script>
+
+</body>
+</html>
